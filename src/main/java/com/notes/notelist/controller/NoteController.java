@@ -1,13 +1,19 @@
 package com.notes.notelist.controller;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.notes.notelist.DTO.NoteDTO;
+import com.notes.notelist.mapper.NoteMapper;
 import com.notes.notelist.model.Note;
 import com.notes.notelist.service.NoteService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("api")
@@ -19,32 +25,40 @@ public class NoteController {
     @ApiOperation(value = "Shows all notes",
             notes = "Shows all notes in the list.",
             response = Note.class)
-    public List<Note> findAll() {
-        return service.findAll();
+    public MappingJacksonValue findAll() {
+        Collection<Note> notes = service.findAll();
+        MappingJacksonValue mapping = new MappingJacksonValue(notes);
+        mapping.setFilters(createFilter());
+        return mapping;
     }
 
     @ApiOperation(value = "Finds note by id",
             notes = "Provide an ID to look up specific note from whole list.",
             response = Note.class)
     @GetMapping(value = "notes/{id}")
-    public Note findNote(@PathVariable Integer id) {
-        return service.getOne(id);
+    public MappingJacksonValue findNote(@PathVariable Integer id) {
+        Note note = service.getOne(id);
+        MappingJacksonValue mapping = new MappingJacksonValue(note);
+        mapping.setFilters(createFilter());
+        return mapping;
     }
 
     @PostMapping(value = "notes")
     @ApiOperation(value = "Adds note",
             notes = "Add new note to the list.",
             response = Note.class)
-    public Note save(@Valid @RequestBody Note note) {
-        return service.create(note);
+    public NoteDTO save(@Valid @RequestBody NoteDTO noteDTO) {
+        Note note = service.create(NoteMapper.INSTANCE.noteToEntity(noteDTO));
+        return NoteMapper.INSTANCE.noteToDTO(note);
     }
 
     @PutMapping(value = "notes")
     @ApiOperation(value = "Updates note",
             notes = "Provide a new title and done status if you want to change it.",
             response = Note.class)
-    public Note update(@Valid @RequestBody Note note) {
-        return service.update(note);
+    public NoteDTO update(@Valid @RequestBody NoteDTO noteDTO) {
+        Note note = service.update(NoteMapper.INSTANCE.noteToEntity(noteDTO));
+        return NoteMapper.INSTANCE.noteToDTO(note);
     }
 
     @DeleteMapping(value = "notes/{id}")
@@ -59,7 +73,15 @@ public class NoteController {
     @ApiOperation(value = "Changes note status",
             notes = "Provide an ID to change note status to done.",
             response = Note.class)
-    public Note makeDone(@PathVariable int id) {
-        return service.makeDone(id);
+    public MappingJacksonValue makeDone(@PathVariable int id) {
+        Note note = service.makeDone(id);
+        MappingJacksonValue mapping = new MappingJacksonValue(note);
+        mapping.setFilters(createFilter());
+        return mapping;
+    }
+
+    private FilterProvider createFilter() {
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("title", "done"); // fields you want to show
+        return new SimpleFilterProvider().addFilter("Note filter", filter);
     }
 }

@@ -1,5 +1,6 @@
 package com.notes.notelist.model;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @Data
 @ApiModel(description = "Details about the note.")
+@JsonFilter("Note filter")
 public class Note {
     @ApiModelProperty(notes = "The unique id of the note.")
     @Id
