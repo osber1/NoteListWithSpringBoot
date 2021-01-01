@@ -21,26 +21,33 @@ import java.util.Collection;
 public class NoteController {
     private final NoteService service;
 
-    @GetMapping(value = "notes")
-    @ApiOperation(value = "Shows all notes",
-            notes = "Shows all notes in the list.",
+    @GetMapping(value = "notesWithoutId")
+    @ApiOperation(value = "Shows all notes without id",
+            notes = "Shows all notes without id in the list.",
             response = Note.class)
-    public MappingJacksonValue findAll() {
+    public MappingJacksonValue findAllWithoutId() {
         Collection<Note> notes = service.findAll();
         MappingJacksonValue mapping = new MappingJacksonValue(notes);
         mapping.setFilters(createFilter());
         return mapping;
     }
 
+    @GetMapping(value = "notes")
+    @ApiOperation(value = "Shows all notes",
+            notes = "Shows all notes in the list.",
+            response = Note.class)
+    public Collection<NoteDTO> findAll() {
+        Collection<Note> notes = service.findAll();
+        return NoteMapper.INSTANCE.noteToDTOs(notes);
+    }
+
     @ApiOperation(value = "Finds note by id",
             notes = "Provide an ID to look up specific note from whole list.",
             response = Note.class)
     @GetMapping(value = "notes/{id}")
-    public MappingJacksonValue findNote(@PathVariable Integer id) {
+    public NoteDTO findNote(@PathVariable Integer id) {
         Note note = service.getOne(id);
-        MappingJacksonValue mapping = new MappingJacksonValue(note);
-        mapping.setFilters(createFilter());
-        return mapping;
+        return NoteMapper.INSTANCE.noteToDTO(note);
     }
 
     @PostMapping(value = "notes")
