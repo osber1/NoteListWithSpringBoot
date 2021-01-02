@@ -1,6 +1,6 @@
 package com.notes.notelist.controller;
 
-import com.fasterxml.jackson.databind.ser.FilterProvider;
+
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.notes.notelist.DTO.NoteDTO;
@@ -28,7 +28,9 @@ public class NoteController {
     public MappingJacksonValue findAllWithoutId() {
         Collection<Note> notes = service.findAll();
         MappingJacksonValue mapping = new MappingJacksonValue(notes);
-        mapping.setFilters(createFilter());
+        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.
+                filterOutAllExcept("title", "done"); // fields you want to show in response body
+        mapping.setFilters(new SimpleFilterProvider().addFilter("Note filter", filter));
         return mapping;
     }
 
@@ -80,15 +82,8 @@ public class NoteController {
     @ApiOperation(value = "Changes note status",
             notes = "Provide an ID to change note status to done.",
             response = Note.class)
-    public MappingJacksonValue makeDone(@PathVariable int id) {
+    public NoteDTO makeDone(@PathVariable int id) {
         Note note = service.makeDone(id);
-        MappingJacksonValue mapping = new MappingJacksonValue(note);
-        mapping.setFilters(createFilter());
-        return mapping;
-    }
-
-    private FilterProvider createFilter() {
-        SimpleBeanPropertyFilter filter = SimpleBeanPropertyFilter.filterOutAllExcept("title", "done"); // fields you want to show
-        return new SimpleFilterProvider().addFilter("Note filter", filter);
+        return NoteMapper.INSTANCE.noteToDTO(note);
     }
 }

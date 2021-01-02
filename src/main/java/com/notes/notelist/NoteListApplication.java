@@ -31,13 +31,13 @@ public class NoteListApplication {
 
     private ApiInfo apiDetails() {
         return new ApiInfo(
-                "Notes list API",
-                "Task for IBS",
+                "Notes list API Documentation",
+                "Notes Application",
                 "1.0",
                 "Free to use",
                 new springfox.documentation.service.Contact("Osvaldas Bernatavičius", "https://github.com/osber1", "osvaldas.bernatavicius@gmail.com"),
-                "API License",
-                "https://github.com/osber1",
+                "Apache 2.0",
+                "https://www.apache.org/licenses/LICENSE-2.0",
                 Collections.emptyList());
     }
 }

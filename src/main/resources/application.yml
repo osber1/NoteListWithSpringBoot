@@ -5,3 +5,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  security:
+    user:
+      name: username
+      password: password
