@@ -16,12 +16,12 @@ import javax.validation.Valid;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("api/notes")
 @RequiredArgsConstructor
 public class NoteController {
     private final NoteService service;
 
-    @GetMapping(value = "notesWithoutId")
+    @GetMapping(value = "withoutId")
     @ApiOperation(value = "Shows all notes without id",
             notes = "Shows all notes without id in the list.",
             response = Note.class)
@@ -34,7 +34,7 @@ public class NoteController {
         return mapping;
     }
 
-    @GetMapping(value = "notes")
+    @GetMapping
     @ApiOperation(value = "Shows all notes",
             notes = "Shows all notes in the list.",
             response = Note.class)
@@ -43,16 +43,16 @@ public class NoteController {
         return NoteMapper.INSTANCE.noteToDTOs(notes);
     }
 
+    @GetMapping(value = "{id}")
     @ApiOperation(value = "Finds note by id",
             notes = "Provide an ID to look up specific note from whole list.",
             response = Note.class)
-    @GetMapping(value = "notes/{id}")
     public NoteDTO findNote(@PathVariable Integer id) {
         Note note = service.getOne(id);
         return NoteMapper.INSTANCE.noteToDTO(note);
     }
 
-    @PostMapping(value = "notes")
+    @PostMapping
     @ApiOperation(value = "Adds note",
             notes = "Add new note to the list.",
             response = Note.class)
@@ -61,7 +61,7 @@ public class NoteController {
         return NoteMapper.INSTANCE.noteToDTO(note);
     }
 
-    @PutMapping(value = "notes")
+    @PutMapping
     @ApiOperation(value = "Updates note",
             notes = "Provide a new title and done status if you want to change it.",
             response = Note.class)
@@ -70,7 +70,7 @@ public class NoteController {
         return NoteMapper.INSTANCE.noteToDTO(note);
     }
 
-    @DeleteMapping(value = "notes/{id}")
+    @DeleteMapping(value = "{id}")
     @ApiOperation(value = "Deletes note by id",
             notes = "Provide an ID and delete note from the list.",
             response = Note.class)
@@ -78,7 +78,7 @@ public class NoteController {
         service.delete(id);
     }
 
-    @GetMapping(value = "notes/done/{id}")
+    @GetMapping(value = "done/{id}")
     @ApiOperation(value = "Changes note status",
             notes = "Provide an ID to change note status to done.",
             response = Note.class)
