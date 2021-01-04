@@ -4,11 +4,14 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -24,4 +27,12 @@ public class Note {
     private String title;
     @ApiModelProperty(notes = "The note's status (done or not).")
     private boolean done;
+    @ApiModelProperty(notes = "The note's creation date.")
+    @Column(name = "created_date", updatable = false, nullable = false)
+    @CreationTimestamp
+    private LocalDateTime createdDate;
+    @ApiModelProperty(notes = "The note's last update date.")
+    @Column(name = "last_updated_date")
+    @UpdateTimestamp
+    private LocalDateTime lastUpdatedDate;
 }
