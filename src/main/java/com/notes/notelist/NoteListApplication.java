@@ -3,7 +3,6 @@ package com.notes.notelist;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
@@ -23,7 +22,6 @@ public class NoteListApplication {
     public Docket swaggerConfiguration() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .paths(PathSelectors.ant("/api/**"))
                 .apis(RequestHandlerSelectors.basePackage("com.notes"))
                 .build()
                 .apiInfo(apiDetails());
