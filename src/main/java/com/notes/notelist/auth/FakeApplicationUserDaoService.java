@@ -25,7 +25,6 @@ public class FakeApplicationUserDaoService implements ApplicationUserDao {
     }
 
     private List<ApplicationUser> getApplicationUsers() {
-
         return Lists.newArrayList(
                 new ApplicationUser(
                         "admin",

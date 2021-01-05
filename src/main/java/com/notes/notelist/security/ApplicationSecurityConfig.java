@@ -1,6 +1,9 @@
 package com.notes.notelist.security;
 
 import com.notes.notelist.auth.ApplicationUserService;
+import com.notes.notelist.jwt.JwtConfig;
+import com.notes.notelist.jwt.JwtTokenVerifier;
+import com.notes.notelist.jwt.JwtUsernameAndPasswordAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,10 +13,10 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import java.util.concurrent.TimeUnit;
+import javax.crypto.SecretKey;
 
 import static com.notes.notelist.security.ApplicationUserRole.*;
 
@@ -24,13 +27,18 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
     private final ApplicationUserService applicationUserService;
+    private final SecretKey secretKey;
+    private final JwtConfig config;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-//                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-//                .and()
                 .csrf().disable()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), config, secretKey))
+                .addFilterAfter(new JwtTokenVerifier(secretKey, config), JwtUsernameAndPasswordAuthenticationFilter.class)
                 .authorizeRequests()
 //                .antMatchers("/").permitAll() // "localhost:8080/" url can access anyone
                 .antMatchers("/api/**").hasAnyRole(SIMPLE.name(), ADMIN.name(), NOTES_ALL_USER_READER.name())
@@ -39,27 +47,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/admin/api/**").hasAuthority(ApplicationUserPermission.USER_WRITE.getPermission())
                 .antMatchers(HttpMethod.GET, "/admin/api/**").hasAnyRole(ADMIN.name(), NOTES_ALL_USER_READER.name())
                 .anyRequest()
-                .authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .permitAll()
-                .defaultSuccessUrl("/", true)
-                .usernameParameter("username")
-                .passwordParameter("password")
-                .and()
-                .rememberMe()
-                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(2))
-                .key("securityKey")
-                .rememberMeParameter("remember-me")
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-                .clearAuthentication(true)
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID", "remember-me")
-                .logoutSuccessUrl("/login");
+                .authenticated();
     }
 
     @Bean
