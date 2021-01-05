@@ -18,4 +18,4 @@ spring:
 application.jwt:
   secretKey: securesecuresecuresecuresecuresecuresecuresecuresecuresecuresecuresecuresecuresecuresecuresecuresecuresecure
   tokenPrefix: "Bearer "
-  tokenExpirationAfterDays: 14
+  tokenExpirationAfterDays: 2
