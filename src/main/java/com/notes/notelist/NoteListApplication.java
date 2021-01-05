@@ -2,6 +2,7 @@ package com.notes.notelist;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -13,6 +14,7 @@ import java.util.Collections;
 
 @SpringBootApplication
 @EnableSwagger2
+@ConfigurationPropertiesScan
 public class NoteListApplication {
     public static void main(String[] args) {
         SpringApplication.run(NoteListApplication.class, args);
