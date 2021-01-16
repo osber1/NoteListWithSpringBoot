@@ -2,7 +2,6 @@ package com.notes.notelist.controller;
 
 import com.notes.notelist.DTO.UserDTO;
 import com.notes.notelist.mapper.UserMapper;
-import com.notes.notelist.model.Note;
 import com.notes.notelist.model.User;
 import com.notes.notelist.service.UserService;
 import io.swagger.annotations.ApiOperation;
