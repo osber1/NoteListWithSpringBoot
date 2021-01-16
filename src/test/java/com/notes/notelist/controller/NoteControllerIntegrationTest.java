@@ -19,15 +19,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class NoteControllerIT {
+public class NoteControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    @Order(3)
-    public void getsAllNotes() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/notes")
+    @Order(1)
+    public void addsNewNote() throws Exception {
+        String newNote = "{\"title\":\"Task\",\"done\":\"false\"}";
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/notes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(newNote)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -43,21 +46,9 @@ public class NoteControllerIT {
     }
 
     @Test
-    @Order(5)
-    public void returnsNotFoundForInvalidSingleNote() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/notes/6")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andReturn();
-    }
-
-    @Test
-    @Order(1)
-    public void addsNewNote() throws Exception {
-        String newNote = "{\"title\":\"Task\",\"done\":\"false\"}";
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/notes")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(newNote)
+    @Order(3)
+    public void getsAllNotes() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/notes")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -69,6 +60,15 @@ public class NoteControllerIT {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/notes/1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test
+    @Order(5)
+    public void returnsNotFoundForInvalidSingleNote() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/notes/6")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
                 .andReturn();
     }
 }
