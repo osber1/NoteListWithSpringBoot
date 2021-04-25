@@ -1,6 +1,5 @@
 package com.notes.notelist.model;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
